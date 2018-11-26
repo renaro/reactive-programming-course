@@ -10,7 +10,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), HomeView {
 
-    val cardsInteraction = PublishSubject.create<PeopleAdapter.Interaction>()
+    private val cardsInteraction = PublishSubject.create<PeopleAdapter.Interaction>()
     val presenter = HomePresenter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,6 +20,9 @@ class MainActivity : AppCompatActivity(), HomeView {
         list_planets.layoutManager = LinearLayoutManager(this, LinearLayout.HORIZONTAL, false)
         peopleAdapter()
         planetAdapter()
+        cardsInteraction.ofType(PeopleAdapter.Interaction.NameTapped::class.java).subscribe{
+            println("Person Id = ${it.personId}")
+        }
     }
 
     private fun peopleAdapter() {
@@ -43,16 +46,7 @@ class MainActivity : AppCompatActivity(), HomeView {
     }
 
 
-
     override fun userInteraction(): Observable<HomeInteraction> {
-        val names = cardsInteraction.ofType(PeopleAdapter.Interaction.CardNameTapped::class.java)
-                .map {
-                    HomeInteraction.NameTapped(it.people)
-                }
-        val initials = cardsInteraction.ofType(PeopleAdapter.Interaction.CardInitialTapped::class.java)
-                .map {
-                    HomeInteraction.InitialTapped(it.people)
-                }
-        return Observable.merge(names, initials)
+        return Observable.empty()
     }
 }
